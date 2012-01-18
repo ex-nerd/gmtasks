@@ -1,0 +1,3 @@
+include *.txt *.rst
+recursive-include *.cfg *.inc *.in
+
