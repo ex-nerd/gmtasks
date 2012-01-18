@@ -7,6 +7,13 @@ Simple multiprocessing server for gearman.
 Until I get a chance to write better documentation, please look at the sample
 usage below.
 
+Task class
+~~~~~~~~~~
+
+This class is a simple wrapper around worker functions that does its best to
+return a job to the queue if the function receives a KeyboardInterrupt or
+raises an exception.
+
 Sample usage
 ~~~~~~~~~~~~
 
