@@ -22,7 +22,7 @@ setup_args = dict(
     description      = 'Gearman Task Server',
     long_description = open('README.rst').read(),
     install_requires = ['gearman'],
-    py_modules       = find_packages(),
+    packages         = find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Environment :: Web Environment",
