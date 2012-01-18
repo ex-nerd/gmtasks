@@ -4,8 +4,13 @@ Gearman Task Server
 
 Simple multiprocessing server for gearman.
 
-Until I get a chance to write better documentation, please look at this sample
-script::
+Until I get a chance to write better documentation, please look at the sample
+usage below.
+
+Sample usage
+~~~~~~~~~~~~
+
+::
 
     from multiprocessing   import freeze_support
     from gmtasks.jsonclass import GearmanWorker
@@ -33,7 +38,7 @@ script::
         server = GearmanTaskServer(
             host_list   = ['localhost:4730'],
             tasks       = tasks,
-            max_workers = 2,
+            max_workers = None, # Defaults to multiprocessing.num_cpus()
             id_prefix   = 'myworker.',
             GMWorker    = GearmanWorker,
             sighandler  = True, # SIGINT and SIGTERM send KeyboardInterrupt
@@ -42,3 +47,8 @@ script::
         # Run the loop
         server.serve_forever()
 
+Download
+~~~~~~~~
+
+* https://github.com/ex-nerd/gmtasks
+* http://pypi.python.org/pypi/gmtasks/
