@@ -4,7 +4,7 @@ Gearman Task Server
 ===================
 """
 
-__version__ = '0.1.1'
+__version__ = '0.2'
 
 import time
 import sys, traceback
@@ -25,17 +25,17 @@ log = logging.getLogger(__name__)
 #
 
 class Task(object):
-    def __init__(self, name, task, verbose=False):
-        self.name    = name
-        self.task    = task
-        self.verbose = verbose
+    def __init__(self, task, callback, verbose=False):
+        self.task     = task
+        self.callback = callback
+        self.verbose  = verbose
     def __call__(self, worker, job):
         try:
-            return self.task(worker, job)
+            return self.callback(worker, job)
         except Exception, e:
             if self.verbose:
                 log.error('WORKER FAILED:  {0}, {1}\n{2}'.format(
-                    self.name,
+                    self.task,
                     str(e),
                     traceback.format_exc()
                     ))
@@ -160,14 +160,18 @@ def _worker_process(tasks, doneq, host_list, worker_class=None, client_id=None, 
                 gm_worker.set_client_id(client_id)
             # Load the tasks
             for task in tasks:
-                if verbose:
-                    log.info("Registering {0} task {1}".format(client_id, task.name))
+                taskname = callback = None
                 if isinstance(task, dict):
-                    gm_worker.register_task(task['name'], task['task'])
+                    taskname = task['task']
+                    callback = task['callback']
                 elif isinstance(task, list) or isinstance(task, tuple):
-                    gm_worker.register_task(task[0], task[1])
+                    taskname, callback = task
                 else:
-                    gm_worker.register_task(task.name, task)
+                    taskname = task.task
+                    callback = task
+                if verbose:
+                    log.info("Registering {0} task {1}".format(client_id, taskname))
+                gm_worker.register_task(taskname, callback)
             # Enter the work loop
             gm_worker.work()
         except gearman.errors.ServerUnavailable, e:
