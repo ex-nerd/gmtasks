@@ -12,6 +12,8 @@ import gearman
 import signal
 
 from multiprocessing import Process, Queue, cpu_count, active_children
+from Queue import Empty
+
 
 # Logging
 import logging
@@ -81,7 +83,6 @@ class GearmanTaskServer(object):
             while True:
                 while len(workers) < self.max_workers:
                     process_counter += 1
-                    #: @todo fixme for more uniqueness. guid?
                     client_id = None
                     if self.id_prefix:
                         client_id = '{0}{1}'.format(self.id_prefix, process_counter)
@@ -95,14 +96,14 @@ class GearmanTaskServer(object):
                             ))
                     p.start()
                     workers.append(p)
-                if self.verbose:
-                    log.info("Num workers:  {0} of {1}".format(len(workers), self.max_workers))
+                    if self.verbose:
+                        log.info("Num workers:  {0} of {1}".format(len(workers), self.max_workers))
                 # Use the queue as a poor man's wait/select against the first
                 # child process to finish.  Add a timeout so we can repopulate
                 # processes that terminate abnormally.
                 try:
                     r = doneq.get(True, 5)
-                except:
+                except Empty:
                     r = None
                 if r is not None:
                     if isinstance(r, gearman.errors.ServerUnavailable):
