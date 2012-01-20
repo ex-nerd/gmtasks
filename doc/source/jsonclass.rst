@@ -3,6 +3,6 @@ JSON Classes
 
 .. automodule:: gmtasks.jsonclass
 
-.. autofunction:: gmtasks.jsonclass.GearmanWorker
+.. autoclass:: gmtasks.jsonclass.GearmanWorker
 
-.. autofunction:: gmtasks.jsonclass.GearmanClient
+.. autoclass:: gmtasks.jsonclass.GearmanClient

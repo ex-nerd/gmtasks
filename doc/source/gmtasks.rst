@@ -1,5 +1,5 @@
-gmtasks
-=======
+GearmanTaskServer
+=================
 
 .. automodule:: gmtasks
 
