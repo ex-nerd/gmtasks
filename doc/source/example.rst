@@ -34,13 +34,13 @@ is a simple server that demonstrates most of how to use gmtasks.
             ]
         # Initialize the server
         server = GearmanTaskServer(
-            host_list   = ['localhost:4730'],
-            tasks       = tasks,
-            max_workers = None, # Defaults to multiprocessing.cpu_count()
-            id_prefix   = 'myworker.',
-            GMWorker    = GearmanWorker,
-            sighandler  = True, # SIGINT and SIGTERM send KeyboardInterrupt
-            verbose     = True, # log.info() and log.error() messages
+            host_list      = ['localhost:4730'],
+            tasks          = tasks,
+            max_workers    = None, # Defaults to multiprocessing.cpu_count()
+            id_prefix      = 'myworker.',
+            worker_class   = GearmanWorker,
+            use_sighandler = True, # SIGINT and SIGTERM send KeyboardInterrupt
+            verbose        = True, # log.info() and log.error() messages
             )
         # Run the loop
         server.serve_forever()
