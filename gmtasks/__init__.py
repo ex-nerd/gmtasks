@@ -2,7 +2,7 @@
 Simple multiprocessing server for gearman.
 """
 
-__version__ = '0.2'
+__version__ = '0.3'
 
 import time
 import sys, traceback
@@ -28,7 +28,12 @@ class Task(object):
     return a job to the queue if the function receives a KeyboardInterrupt or
     raises an exception.
 
-    Enable verbose to call log.error() with exception details.
+    **task**
+        The gearman task name.
+    **callback**
+        Worker callback function.
+    **verbose**
+        If true, log.error() with exception details.
     """
     def __init__(self, task, callback, verbose=False):
         self.task     = task
@@ -58,21 +63,22 @@ class GearmanTaskServer(object):
     The main task server class.
 
     **host_list**
-        List of gearman hosts to connect to.  See ``gearman`` for full
-        documentation.
+        List of gearman hosts to connect to.  See :py:mod:`gearman.worker` for
+        more documentation.
     **tasks**
         List of tasks.  Tasks may be Task() objects, dicts, lists or tuples.
     **max_workers**
         Number of worker processes to launch.  Defaults to
-        ``multiprocessing.cpu_count()``
+        :py:func:`~multiprocessing.cpu_count()`
     **id_prefix**
         If you want your workers to register a client_id with gearman, provide
         a prefix here.  GearmanTaskServer will append an incrementing number
         to the end of this, representing the total number of subprocesses
         started in this run.
-    **GMWorker**
-        GearmanWorker class to use.  Defaults to gearman.GearmanWorker.
-    **sighandler**
+    **worker_class**
+        GearmanWorker class to use.  Defaults to :py:class:`gearman.worker.GearmanWorker`.
+        You could also use :py:class:`jsonclass.GearmanWorker`.
+    **use_sighandler**
         Set to False if you would prefer to use your own signal handlers
         instead of trapping SIGINT and SIGTERM as KeyboardInterrupt events.
     **verbose**
@@ -81,18 +87,18 @@ class GearmanTaskServer(object):
 
     def __init__(self,
             host_list, tasks, max_workers=None,
-            id_prefix = None, GMWorker=None, sighandler=True, verbose=False
+            id_prefix = None, worker_class=None, sighandler=True, verbose=False
             ):
         self.host_list   = host_list
         self.tasks       = tasks
         self.max_workers = int(max_workers)
-        self.worker      = GMWorker
+        self.worker      = worker_class
         self.id_prefix   = id_prefix
         self.verbose     = verbose
         if not self.worker:
             self.worker = gearman.GearmanWorker
         # Signal Handler override?
-        if sighandler:
+        if use_sighandler:
             self._setup_sighandler()
         # Sanity check
         if self.max_workers < 1:

@@ -1,5 +1,8 @@
 """
 GearmanWorker and GearmanClient classes that send/receive data in JSON format.
+
+Please note that the default python json encoder has been extended to also
+encode Decimal data.
 """
 
 import json
@@ -28,7 +31,7 @@ class _JSONDataEncoder(gearman.DataEncoder):
 
 class GearmanWorker(gearman.GearmanWorker):
     """
-    Extend gearman.GearmanWorker with our _JSONDataEncoder
+    Extend gearman.GearmanWorker to receive job data in JSON format.
     """
     data_encoder = _JSONDataEncoder
     def after_poll(self, any_activity):
@@ -36,6 +39,6 @@ class GearmanWorker(gearman.GearmanWorker):
 
 class GearmanClient(gearman.GearmanClient):
     """
-    Extend gearman.GearmanClient with our _JSONDataEncoder
+    Extend gearman.GearmanClient to send job data in JSON format.
     """
     data_encoder = _JSONDataEncoder
