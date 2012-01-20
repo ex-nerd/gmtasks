@@ -9,7 +9,8 @@ by your task methods, and attempts to make sure that the affected job is
 re-inserted into the queue (which is not the default behavior if the worker
 script exits abnormally)
 
-:ref:`full documentation<http://packages.python.org/gmtasks/>`
+Please see the `full documentation <http://packages.python.org/gmtasks/>`_ for
+more detailed information.
 
 Sample usage
 ~~~~~~~~~~~~
