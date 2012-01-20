@@ -1,7 +1,5 @@
 """
-===================
-Gearman Task Server
-===================
+Simple multiprocessing server for gearman.
 """
 
 __version__ = '0.2'
@@ -25,6 +23,13 @@ log = logging.getLogger(__name__)
 #
 
 class Task(object):
+    """
+    This class is a simple wrapper around worker functions that does its best to
+    return a job to the queue if the function receives a KeyboardInterrupt or
+    raises an exception.
+
+    Enable verbose to call log.error() with exception details.
+    """
     def __init__(self, task, callback, verbose=False):
         self.task     = task
         self.callback = callback
@@ -49,10 +54,34 @@ class Task(object):
 #
 
 class GearmanTaskServer(object):
+    """
+    The main task server class.
+
+    **host_list**
+        List of gearman hosts to connect to.  See ``gearman`` for full
+        documentation.
+    **tasks**
+        List of tasks.  Tasks may be Task() objects, dicts, lists or tuples.
+    **max_workers**
+        Number of worker processes to launch.  Defaults to
+        ``multiprocessing.cpu_count()``
+    **id_prefix**
+        If you want your workers to register a client_id with gearman, provide
+        a prefix here.  GearmanTaskServer will append an incrementing number
+        to the end of this, representing the total number of subprocesses
+        started in this run.
+    **GMWorker**
+        GearmanWorker class to use.  Defaults to gearman.GearmanWorker.
+    **sighandler**
+        Set to False if you would prefer to use your own signal handlers
+        instead of trapping SIGINT and SIGTERM as KeyboardInterrupt events.
+    **verbose**
+        Set to True to enable logger.
+    """
 
     def __init__(self,
             host_list, tasks, max_workers=None,
-            id_prefix = None, GMWorker=None, sighandler=False, verbose=False
+            id_prefix = None, GMWorker=None, sighandler=True, verbose=False
             ):
         self.host_list   = host_list
         self.tasks       = tasks
@@ -64,7 +93,7 @@ class GearmanTaskServer(object):
             self.worker = gearman.GearmanWorker
         # Signal Handler override?
         if sighandler:
-            self.setup_sighandler()
+            self._setup_sighandler()
         # Sanity check
         if self.max_workers < 1:
             try:
@@ -73,6 +102,10 @@ class GearmanTaskServer(object):
                 self.max_workers = 1
 
     def serve_forever(self):
+        """
+        Launch the multi-process server and process jobs until an interrupt
+        is received.
+        """
         # Initialize a queue designed to track child processes that exit.
         doneq = Queue()
         # Keep track of how many clients we have created, so they can have unique IDs
@@ -123,7 +156,7 @@ class GearmanTaskServer(object):
         except KeyboardInterrupt:
             log.error('EXIT.  RECEIVED INTERRUPT')
 
-    def setup_sighandler(self):
+    def _setup_sighandler(self):
         """
         Initialize our slight change to the signal handler setup
 

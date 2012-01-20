@@ -1,5 +1,5 @@
 """
-JSON Override classes for Gearman clients and workers
+GearmanWorker and GearmanClient classes that send/receive data in JSON format.
 """
 
 import json
@@ -8,7 +8,7 @@ import gearman
 
 class _JSONEncoder(json.JSONEncoder):
     """
-    Override JSON encoder class that recognizes decimals
+    An override JSON encoder class that recognizes Decimal objects.
     """
     def default(self, obj):
         if isinstance(obj, decimal.Decimal):
@@ -17,7 +17,7 @@ class _JSONEncoder(json.JSONEncoder):
 
 class _JSONDataEncoder(gearman.DataEncoder):
     """
-    Override Gearman DataEncoder class to send/receive JSON data
+    An override Gearman DataEncoder class to send/receive JSON data.
     """
     @classmethod
     def encode(cls, encodable_object):
@@ -27,9 +27,15 @@ class _JSONDataEncoder(gearman.DataEncoder):
         return json.loads(decodable_string)
 
 class GearmanWorker(gearman.GearmanWorker):
+    """
+    Extend gearman.GearmanWorker with our _JSONDataEncoder
+    """
     data_encoder = _JSONDataEncoder
     def after_poll(self, any_activity):
         return True
 
 class GearmanClient(gearman.GearmanClient):
+    """
+    Extend gearman.GearmanClient with our _JSONDataEncoder
+    """
     data_encoder = _JSONDataEncoder
