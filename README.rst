@@ -2,17 +2,14 @@
 Gearman Task Server
 ===================
 
-Simple multiprocessing server for gearman.
+``gmtasks`` contains a simple multiprocessing server for Gearman workers,
+designed for ease of configuration and maximum availability.  It includes a
+task wrapper class that traps any interrupts or exceptions that might be thrown
+by your task methods, and attempts to make sure that the affected job is
+re-inserted into the queue (which is not the default behavior if the worker
+script exits abnormally)
 
-Until I get a chance to write better documentation, please look at the sample
-usage below.
-
-Task class
-~~~~~~~~~~
-
-This class is a simple wrapper around worker functions that does its best to
-return a job to the queue if the function receives a KeyboardInterrupt or
-raises an exception.
+:ref:`full documentation<http://packages.python.org/gmtasks/>`
 
 Sample usage
 ~~~~~~~~~~~~
