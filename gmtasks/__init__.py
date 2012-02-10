@@ -87,7 +87,7 @@ class GearmanTaskServer(object):
 
     def __init__(self,
             host_list, tasks, max_workers=None,
-            id_prefix = None, worker_class=None, sighandler=True, verbose=False
+            id_prefix = None, worker_class=None, use_sighandler=True, verbose=False
             ):
         self.host_list   = host_list
         self.tasks       = tasks
