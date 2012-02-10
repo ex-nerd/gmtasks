@@ -91,7 +91,15 @@ class GearmanTaskServer(object):
             ):
         self.host_list   = host_list
         self.tasks       = tasks
-        self.max_workers = int(max_workers)
+
+        if max_workers:
+            self.max_workers = int(max_workers)
+        else:
+            try:
+                self.max_workers = int(cpu_count())
+            except:
+                self.max_workers = 1
+
         self.worker      = worker_class
         self.id_prefix   = id_prefix
         self.verbose     = verbose
@@ -100,12 +108,7 @@ class GearmanTaskServer(object):
         # Signal Handler override?
         if use_sighandler:
             self._setup_sighandler()
-        # Sanity check
-        if self.max_workers < 1:
-            try:
-                self.max_workers = int(cpu_count())
-            except:
-                self.max_workers = 1
+
 
     def serve_forever(self):
         """
