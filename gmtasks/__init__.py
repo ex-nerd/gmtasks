@@ -179,6 +179,7 @@ class GearmanTaskServer(object):
 # Our own interrupt handler
 #
 
+
 def _interrupt_handler(signum, frame):
     """
     Python maps SIGINT to KeyboardInterrupt by default, but we need to
